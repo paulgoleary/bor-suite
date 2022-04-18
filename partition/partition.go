@@ -31,7 +31,7 @@ func main() {
 		}
 
 		// TODO: batching?
-		
+
 		iterAll := sourceDb.NewIterator(nil, nil)
 		cntIter := 0
 		for iterAll.Next() {
@@ -48,8 +48,8 @@ func main() {
 				}
 			}
 			cntIter++
-			if cntIter%1000 == 0 {
-				println(fmt.Sprintf("iteration count %v", cntIter))
+			if cntIter%10000 == 0 {
+				println(fmt.Sprintf("iteration count %v, current prefix %v", cntIter, iterAll.Key()[0]))
 			}
 		}
 	}
