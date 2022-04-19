@@ -42,7 +42,7 @@ func main() {
 			partPrefix := byte(i)
 			wp.Submit(func() {
 				sliceTarget := part0Db
-				if i >= 0x80 {
+				if partPrefix >= 0x80 {
 					sliceTarget = part1Db
 				}
 				iterSlice := sourceDb.NewIterator([]byte{partPrefix}, nil)
@@ -66,6 +66,7 @@ func main() {
 						println(fmt.Sprintf("slice prefix '%v.%v', iteration count %v", partPrefix, subPrefix, iterCnt))
 					}
 				}
+				println(fmt.Sprintf("FINISHED slice prefix '%v', iteration count %v", partPrefix, iterCnt))
 			})
 		}
 		wp.StopWait()
