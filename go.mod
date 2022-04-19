@@ -30,6 +30,8 @@ require (
 	github.com/etcd-io/bbolt v1.3.3 // indirect
 	github.com/fjl/memsize v0.0.0-20190710130421-bcb5799ab5e5 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/gammazero/deque v0.1.0 // indirect
+	github.com/gammazero/workerpool v1.1.2 // indirect
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08 // indirect
 	github.com/go-kit/kit v0.9.0 // indirect
 	github.com/go-logfmt/logfmt v0.5.0 // indirect
@@ -122,6 +124,4 @@ require (
 
 go 1.17
 
-replace (
-	github.com/ethereum/go-ethereum => github.com/maticnetwork/bor v0.2.14
-)
+replace github.com/ethereum/go-ethereum => github.com/maticnetwork/bor v0.2.14

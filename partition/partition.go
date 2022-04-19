@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/gammazero/workerpool"
 	"github.com/maticnetwork/bor/core/rawdb"
 	"github.com/maticnetwork/bor/ethdb"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 func main() {
@@ -30,27 +32,42 @@ func main() {
 			panic(err)
 		}
 
-		// TODO: batching?
+		wp := workerpool.New(runtime.NumCPU() * 2)
 
-		iterAll := sourceDb.NewIterator(nil, nil)
-		cntIter := 0
-		for iterAll.Next() {
-			if len(iterAll.Key()) == 0 {
-				panic("should not happen - empty key value")
-			}
-			if iterAll.Key()[0] < 0x80 {
-				if err = part0Db.Put(iterAll.Key(), iterAll.Value()); err != nil {
-					panic(err)
+		for i := 0; i <= 0x100; i++ {
+
+			wp.Submit(func() {
+				partPrefix := byte(i)
+				var sliceTarget ethdb.Database
+				if i < 0x80 {
+					sliceTarget = part0Db
+				} else {
+					sliceTarget = part1Db
 				}
-			} else {
-				if err = part1Db.Put(iterAll.Key(), iterAll.Value()); err != nil {
-					panic(err)
+				iterSlice := sourceDb.NewIterator([]byte{partPrefix}, nil)
+				currBatch := sliceTarget.NewBatch()
+				iterCnt := 0
+				for iterSlice.Next() {
+					if sliceErr := currBatch.Put(iterSlice.Key(), iterSlice.Value()); sliceErr != nil {
+						panic(sliceErr)
+					} else if currBatch.ValueSize() > ethdb.IdealBatchSize {
+						if sliceErr = currBatch.Write(); sliceErr != nil {
+							panic(err)
+						}
+						currBatch.Reset()
+					}
+					iterCnt++
+					if iterCnt%10000 == 0 {
+						subPrefix := 0
+						if len(iterSlice.Key()) > 1 {
+							subPrefix = int(iterSlice.Key()[1])
+						}
+						println(fmt.Sprintf("slice prefix '%v.%v', iteration count %v", partPrefix, subPrefix, iterCnt))
+					}
 				}
-			}
-			cntIter++
-			if cntIter%10000 == 0 {
-				println(fmt.Sprintf("iteration count %v, current prefix %v", cntIter, iterAll.Key()[0]))
-			}
+			})
+
 		}
+		wp.StopWait()
 	}
 }
