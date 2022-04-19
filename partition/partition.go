@@ -19,6 +19,8 @@ func main() {
 		panic(err)
 	} else {
 
+		defer sourceDb.Close()
+
 		db0Path := dbPath + ".0"
 		db1Path := dbPath + ".1"
 
@@ -27,21 +29,20 @@ func main() {
 		if part0Db, err = rawdb.NewLevelDBDatabaseWithFreezer(db0Path, 0, 0, filepath.Join(db0Path, "ancient"), ""); err != nil {
 			panic(err)
 		}
+		defer part0Db.Close()
 
 		if part1Db, err = rawdb.NewLevelDBDatabaseWithFreezer(db1Path, 0, 0, filepath.Join(db1Path, "ancient"), ""); err != nil {
 			panic(err)
 		}
+		defer part1Db.Close()
 
 		wp := workerpool.New(runtime.NumCPU() * 2)
 
-		for i := 0; i <= 0x100; i++ {
-
+		for i := 0; i < 0x100; i++ {
+			partPrefix := byte(i)
 			wp.Submit(func() {
-				partPrefix := byte(i)
-				var sliceTarget ethdb.Database
-				if i < 0x80 {
-					sliceTarget = part0Db
-				} else {
+				sliceTarget := part0Db
+				if i >= 0x80 {
 					sliceTarget = part1Db
 				}
 				iterSlice := sourceDb.NewIterator([]byte{partPrefix}, nil)
@@ -66,7 +67,6 @@ func main() {
 					}
 				}
 			})
-
 		}
 		wp.StopWait()
 	}
