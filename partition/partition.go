@@ -1,19 +1,19 @@
-package main
+package partition
 
 import (
 	"fmt"
 	"github.com/gammazero/workerpool"
 	"github.com/maticnetwork/bor/core/rawdb"
 	"github.com/maticnetwork/bor/ethdb"
-	"os"
 	"path/filepath"
 	"runtime"
 )
 
-func main() {
-	argsWithoutProg := os.Args[1:]
+func POCPartitionDatabase(dbPath string, numParts int, report func(string)) error {
 
-	dbPath := argsWithoutProg[0]
+	if numParts != 2 {
+		return fmt.Errorf("should not happen - POC version only supports two partitions")
+	}
 
 	if sourceDb, err := rawdb.NewLevelDBDatabaseWithFreezer(dbPath, 0, 0, filepath.Join(dbPath, "ancient"), ""); err != nil {
 		panic(err)
@@ -63,12 +63,14 @@ func main() {
 						if len(iterSlice.Key()) > 1 {
 							subPrefix = int(iterSlice.Key()[1])
 						}
-						println(fmt.Sprintf("slice prefix '%v.%v', iteration count %v", partPrefix, subPrefix, iterCnt))
+						report(fmt.Sprintf("slice prefix '%v.%v', iteration count %v", partPrefix, subPrefix, iterCnt))
 					}
 				}
-				println(fmt.Sprintf("FINISHED slice prefix '%v', iteration count %v", partPrefix, iterCnt))
+				report(fmt.Sprintf("FINISHED slice prefix '%v', iteration count %v", partPrefix, iterCnt))
 			})
 		}
 		wp.StopWait()
 	}
+
+	return nil
 }

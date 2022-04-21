@@ -64,7 +64,7 @@ func findPartitions(partRoot string) (ret []string, err error) {
 	return
 }
 
-func NewPartitionedDatabaseWithFreezer(dbRoot string, cache int, handles int, freezer string, namespace string) (db ethdb.Database, err error) {
+func NewPOCPartitionedDatabaseWithFreezer(dbRoot string, cache int, handles int, freezer string, namespace string) (db ethdb.Database, err error) {
 
 	var partDirs []string
 	if partDirs, err = findPartitions(dbRoot); err != nil {
