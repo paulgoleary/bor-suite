@@ -16,7 +16,7 @@ func main() {
 	switch argsOnly[0] {
 	case "create":
 		{
-			if err = partition.POCPartitionDatabase(argsOnly[0], 2,
+			if err = partition.POCPartitionDatabase(argsOnly[1], 2,
 				func(r string) {
 					println(r)
 				}); err != nil {
@@ -26,12 +26,12 @@ func main() {
 	case "check":
 		{
 			checks := 10_000
-			if len(argsOnly) > 2 {
-				if checks, err = strconv.Atoi(argsOnly[2]); err != nil {
+			if len(argsOnly) > 3 {
+				if checks, err = strconv.Atoi(argsOnly[3]); err != nil {
 					panic(err)
 				}
 			}
-			if err = partition.CheckPOCPartitionedDatabase(argsOnly[0], argsOnly[1], checks,
+			if err = partition.CheckPOCPartitionedDatabase(argsOnly[1], argsOnly[2], checks,
 				func(r string) {
 					println(r)
 				}); err != nil {
