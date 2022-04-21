@@ -71,7 +71,7 @@ func NewPOCPartitionedDatabaseWithFreezer(dbRoot string, cache int, handles int,
 		return
 	}
 	if len(partDirs) != 2 {
-		err = fmt.Errorf("should not happen - POC version only supports two partitions")
+		err = fmt.Errorf("should not happen - POC version only supports two partitions (%v)", strings.Join(partDirs, ", "))
 		return
 	}
 
@@ -177,8 +177,7 @@ type partIterator struct {
 func (p *partIterator) Next() bool {
 	if len(p.pi) == 0 {
 		return false
-	}
-	if n := p.pi[0].Next(); n {
+	} else if n := p.pi[0].Next(); n {
 		return true
 	} else {
 		p.pi = p.pi[1:]
