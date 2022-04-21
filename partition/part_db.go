@@ -64,7 +64,7 @@ func findPartitions(partRoot string) (ret []string, err error) {
 	return
 }
 
-func NewPOCPartitionedDatabaseWithFreezer(dbRoot string, cache int, handles int, freezer string, namespace string) (db ethdb.Database, err error) {
+func NewPOCPartitionedDatabaseWithFreezer(dbRoot string, cache int, handles int, freezerName string, namespace string) (db ethdb.Database, err error) {
 
 	var partDirs []string
 	if partDirs, err = findPartitions(dbRoot); err != nil {
@@ -87,7 +87,9 @@ func NewPOCPartitionedDatabaseWithFreezer(dbRoot string, cache int, handles int,
 			err = fmt.Errorf("should not happen - invalid partition ordinal: %v", n)
 			return
 		}
-		pt[ord], err = rawdb.NewLevelDBDatabaseWithFreezer(d, cache, handles, freezer, namespace)
+		if pt[ord], err = rawdb.NewLevelDBDatabaseWithFreezer(d, cache, handles, filepath.Join(d, freezerName), namespace); err != nil {
+			return
+		}
 	}
 
 	return &PartitionedDatabase{pt: partTable(pt)}, nil

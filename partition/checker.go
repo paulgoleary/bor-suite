@@ -44,7 +44,7 @@ func CheckPOCPartitionedDatabase(srcDbPath, checkDbPath string, checks int, repo
 	if sourceDb, err := rawdb.NewLevelDBDatabaseWithFreezer(srcDbPath, 0, 0, filepath.Join(srcDbPath, "ancient"), ""); err != nil {
 		return err
 	} else {
-		if checkDb, err := NewPOCPartitionedDatabaseWithFreezer(checkDbPath, 0, 0, filepath.Join(srcDbPath, "ancient"), ""); err != nil {
+		if checkDb, err := NewPOCPartitionedDatabaseWithFreezer(checkDbPath, 0, 0, "ancient", ""); err != nil {
 			return err
 		} else {
 			for i := 0; i < checks; i++ {
