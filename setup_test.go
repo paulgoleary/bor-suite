@@ -2,10 +2,9 @@ package bor_suite
 
 import (
 	"encoding/json"
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/eth"
+	"github.com/maticnetwork/bor/core"
+	"github.com/maticnetwork/bor/core/rawdb"
+	"github.com/maticnetwork/bor/eth"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"testing"
@@ -36,8 +35,6 @@ func TestSetup(t *testing.T) {
 	require.NoError(t, err)
 
 	ethConf.Genesis.MustCommit(testDb)
-
-	ethereum := utils.CreateBorEthereum(ethConf)
-
-	ethConf.Genesis.MustCommit(ethereum.ChainDb())
+	//ethereum := utils.CreateBorEthereum(ethConf)
+	//ethConf.Genesis.MustCommit(ethereum.ChainDb())
 }

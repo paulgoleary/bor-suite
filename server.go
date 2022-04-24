@@ -78,7 +78,7 @@ func startDevServer(nodeConfig *node.Config, nwid uint64) (n *node.Node, err err
 	app := &cli.App{}
 	set := flag.NewFlagSet("dev", 0)
 	cxt := cli.NewContext(app, set, nil)
-	utils.StartNode(cxt, n)
+	utils.StartNode(cxt, n, false)
 
 	am := n.AccountManager()
 	_ = am
