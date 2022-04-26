@@ -17,7 +17,11 @@ func main() {
 	switch argsOnly[0] {
 	case "create":
 		{
-			if err = partition.POCPartitionDatabase(argsOnly[1], 2,
+			targetPath := argsOnly[1]
+			if len(argsOnly) > 2 {
+				targetPath = argsOnly[2]
+			}
+			if err = partition.POCPartitionDatabase(argsOnly[1], targetPath, 2,
 				func(r string) {
 					println(r)
 				}); err != nil {

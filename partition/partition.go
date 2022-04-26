@@ -9,7 +9,7 @@ import (
 	"runtime"
 )
 
-func POCPartitionDatabase(dbPath string, numParts int, report func(string)) error {
+func POCPartitionDatabase(dbPath, targetPath string, numParts int, report func(string)) error {
 
 	if numParts != 2 {
 		return fmt.Errorf("should not happen - POC version only supports two partitions")
@@ -21,17 +21,17 @@ func POCPartitionDatabase(dbPath string, numParts int, report func(string)) erro
 
 		defer sourceDb.Close()
 
-		db0Path := dbPath + ".0"
-		db1Path := dbPath + ".1"
+		db0Path := filepath.Join(targetPath, ".0")
+		db1Path := filepath.Join(targetPath, ".1")
 
 		var part0Db, part1Db ethdb.Database
 
-		if part0Db, err = rawdb.NewLevelDBDatabaseWithFreezer(db0Path, 0, 0, filepath.Join(db0Path, "ancient"), ""); err != nil {
+		if part0Db, err = rawdb.NewLevelDBDatabase(db0Path, 0, 0, ""); err != nil {
 			panic(err)
 		}
 		defer part0Db.Close()
 
-		if part1Db, err = rawdb.NewLevelDBDatabaseWithFreezer(db1Path, 0, 0, filepath.Join(db1Path, "ancient"), ""); err != nil {
+		if part1Db, err = rawdb.NewLevelDBDatabase(db1Path, 0, 0, ""); err != nil {
 			panic(err)
 		}
 		defer part1Db.Close()
