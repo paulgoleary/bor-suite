@@ -40,6 +40,16 @@ func main() {
 				}); err != nil {
 				panic(err)
 			}
+		}
+	case "validate":
+		{
+			checkDbPaths := strings.Split(argsOnly[1], ":")
+			if err = partition.ValidatePOCPartitionedDatabase(checkDbPaths, argsOnly[2],
+				func(r string) {
+					println(r)
+				}); err != nil {
+				panic(err)
+			}
 
 		}
 	default:

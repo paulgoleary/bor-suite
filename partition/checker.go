@@ -50,7 +50,7 @@ func CheckPOCPartitionedDatabase(srcDbPath, freezerPath string, checkDbPartPaths
 		} else {
 			for i := 0; i < checks; i++ {
 				checkKey := makeRandomKey()
-				report(fmt.Sprintf("checking rando key %v", hex.EncodeToString(checkKey)))
+				report(fmt.Sprintf("checking rando key '%v'", hex.EncodeToString(checkKey)))
 				sourceIter := sourceDb.NewIterator(checkKey, nil)
 				checkIter := checkDb.NewIterator(checkKey, nil)
 				if sz, err := compareIters(sourceIter, checkIter); err != nil {
