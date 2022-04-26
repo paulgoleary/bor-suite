@@ -39,12 +39,12 @@ func compareIters(il, ir ethdb.Iterator) (sz int, err error) {
 	return
 }
 
-func CheckPOCPartitionedDatabase(srcDbPath, checkDbPath string, checks int, report func(string)) error {
+func CheckPOCPartitionedDatabase(srcDbPath, freezerPath string, checkDbPartPaths []string, checks int, report func(string)) error {
 
 	if sourceDb, err := rawdb.NewLevelDBDatabaseWithFreezer(srcDbPath, 0, 0, filepath.Join(srcDbPath, "ancient"), ""); err != nil {
 		return err
 	} else {
-		if checkDb, err := NewPOCPartitionedDatabaseWithFreezer(checkDbPath, 0, 0, "ancient", ""); err != nil {
+		if checkDb, err := NewPOCPartitionedDatabaseWithFreezer(checkDbPartPaths, 0, 0, freezerPath, ""); err != nil {
 			return err
 		} else {
 			for i := 0; i < checks; i++ {

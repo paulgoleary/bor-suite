@@ -5,6 +5,7 @@ import (
 	"github.com/paulgoleary/bor-suite/partition"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -26,12 +27,14 @@ func main() {
 	case "check":
 		{
 			checks := 10_000
-			if len(argsOnly) > 3 {
+			if len(argsOnly) > 4 {
 				if checks, err = strconv.Atoi(argsOnly[3]); err != nil {
 					panic(err)
 				}
 			}
-			if err = partition.CheckPOCPartitionedDatabase(argsOnly[1], argsOnly[2], checks,
+			// args are: source_path check_path.0:check_path.1 freezer_path
+			checkDbPaths := strings.Split(argsOnly[2], ":")
+			if err = partition.CheckPOCPartitionedDatabase(argsOnly[1], argsOnly[3], checkDbPaths, checks,
 				func(r string) {
 					println(r)
 				}); err != nil {

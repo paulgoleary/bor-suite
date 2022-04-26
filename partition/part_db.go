@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/maticnetwork/bor/core/rawdb"
 	"github.com/maticnetwork/bor/ethdb"
+	"github.com/maticnetwork/bor/ethdb/leveldb"
 	"io/fs"
 	"path/filepath"
 	"strconv"
@@ -14,9 +15,9 @@ func bytePartition(b byte, n int) int {
 	return int(b) / (256 / n)
 }
 
-type partTable []ethdb.Database
+type partTable []ethdb.KeyValueStore
 
-func (pt partTable) get(b byte) ethdb.Database {
+func (pt partTable) get(b byte) ethdb.KeyValueStore {
 	return pt[bytePartition(b, len(pt))]
 }
 
@@ -24,7 +25,7 @@ type PartitionedDatabase struct {
 	pt partTable
 }
 
-var _ ethdb.Database = &PartitionedDatabase{}
+var _ ethdb.KeyValueStore = &PartitionedDatabase{}
 
 func getPartNameOrd(name string) (ord int, err error) {
 	s := strings.Split(name, ".")
@@ -64,18 +65,14 @@ func findPartitions(partRoot string) (ret []string, err error) {
 	return
 }
 
-func NewPOCPartitionedDatabaseWithFreezer(dbRoot string, cache int, handles int, freezerName string, namespace string) (db ethdb.Database, err error) {
+func NewPOCPartitionedDatabaseWithFreezer(partDirs []string, cache int, handles int, freezerPath string, namespace string) (db ethdb.Database, err error) {
 
-	var partDirs []string
-	if partDirs, err = findPartitions(dbRoot); err != nil {
-		return
-	}
 	if len(partDirs) != 2 {
 		err = fmt.Errorf("should not happen - POC version only supports two partitions (%v)", strings.Join(partDirs, ", "))
 		return
 	}
 
-	pt := make([]ethdb.Database, len(partDirs))
+	pt := make([]ethdb.KeyValueStore, len(partDirs))
 
 	for _, d := range partDirs {
 		_, n := filepath.Split(d)
@@ -87,12 +84,13 @@ func NewPOCPartitionedDatabaseWithFreezer(dbRoot string, cache int, handles int,
 			err = fmt.Errorf("should not happen - invalid partition ordinal: %v", n)
 			return
 		}
-		if pt[ord], err = rawdb.NewLevelDBDatabaseWithFreezer(d, cache, handles, filepath.Join(d, freezerName), namespace); err != nil {
+		if pt[ord], err = leveldb.New(d, cache, handles, namespace); err != nil {
 			return
 		}
 	}
 
-	return &PartitionedDatabase{pt: partTable(pt)}, nil
+	pdb := &PartitionedDatabase{pt: partTable(pt)}
+	return rawdb.NewDatabaseWithFreezer(pdb, freezerPath, namespace)
 }
 
 func (p PartitionedDatabase) Has(key []byte) (bool, error) {
@@ -109,26 +107,6 @@ func (p PartitionedDatabase) Get(key []byte) ([]byte, error) {
 	return p.pt.get(key[0]).Get(key)
 }
 
-func (p PartitionedDatabase) HasAncient(kind string, number uint64) (bool, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (p PartitionedDatabase) Ancient(kind string, number uint64) ([]byte, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (p PartitionedDatabase) Ancients() (uint64, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (p PartitionedDatabase) AncientSize(kind string) (uint64, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (p PartitionedDatabase) Put(key []byte, value []byte) error {
 	if len(key) == 0 {
 		return fmt.Errorf("'put' of nil / empty key not supported")
@@ -141,25 +119,6 @@ func (p PartitionedDatabase) Delete(key []byte) error {
 		return fmt.Errorf("'delete' of nil / empty key not supported")
 	}
 	return p.pt.get(key[0]).Delete(key)
-}
-
-func (p PartitionedDatabase) AppendAncient(number uint64, hash, header, body, receipt, td []byte) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (p PartitionedDatabase) TruncateAncients(n uint64) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (p PartitionedDatabase) Sync() error {
-	for i := range p.pt {
-		if err := p.pt[i].Sync(); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func (p PartitionedDatabase) NewBatch() ethdb.Batch {
