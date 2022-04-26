@@ -53,7 +53,7 @@ func POCPartitionDatabase(dbPath string, numParts int, report func(string)) erro
 						panic(sliceErr)
 					} else if currBatch.ValueSize() > ethdb.IdealBatchSize {
 						if sliceErr = currBatch.Write(); sliceErr != nil {
-							panic(err)
+							panic(sliceErr)
 						}
 						currBatch.Reset()
 					}
@@ -65,6 +65,10 @@ func POCPartitionDatabase(dbPath string, numParts int, report func(string)) erro
 						}
 						report(fmt.Sprintf("slice prefix '%v.%v', iteration count %v", partPrefix, subPrefix, iterCnt))
 					}
+				}
+				// make sure we write out the last batch
+				if err = currBatch.Write(); err != nil {
+					panic(err)
 				}
 				report(fmt.Sprintf("FINISHED slice prefix '%v', iteration count %v", partPrefix, iterCnt))
 			})
