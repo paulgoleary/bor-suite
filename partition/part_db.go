@@ -131,7 +131,6 @@ type partIterator struct {
 }
 
 // simple / naive initial impl
-// TODO: will this require locking?
 
 func (p *partIterator) Next() bool {
 	if len(p.pi) == 0 {
@@ -139,6 +138,7 @@ func (p *partIterator) Next() bool {
 	} else if n := p.pi[0].Next(); n {
 		return true
 	} else {
+		p.pi[0].Release()
 		p.pi = p.pi[1:]
 		return p.Next()
 	}

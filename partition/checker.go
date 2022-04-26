@@ -2,6 +2,7 @@ package partition
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"github.com/maticnetwork/bor/core/rawdb"
 	"github.com/maticnetwork/bor/ethdb"
@@ -49,6 +50,7 @@ func CheckPOCPartitionedDatabase(srcDbPath, freezerPath string, checkDbPartPaths
 		} else {
 			for i := 0; i < checks; i++ {
 				checkKey := makeRandomKey()
+				report(fmt.Sprintf("checking rando key %v", base64.StdEncoding.EncodeToString(checkKey)))
 				sourceIter := sourceDb.NewIterator(checkKey, nil)
 				checkIter := checkDb.NewIterator(checkKey, nil)
 				if sz, err := compareIters(sourceIter, checkIter); err != nil {
