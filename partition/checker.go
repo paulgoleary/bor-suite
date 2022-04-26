@@ -22,9 +22,9 @@ func compareIters(il, ir ethdb.Iterator) (sz int, err error) {
 	for il.Next() {
 		if !ir.Next() {
 			if ir.Error() != nil {
-				err = fmt.Errorf("right iter ended before left (%v): %v", sz, err.Error())
+				err = fmt.Errorf("right iter ended before left (%v, '%v'): %v", sz, hex.EncodeToString(il.Key()), err.Error())
 			} else {
-				err = fmt.Errorf("right iter ended before left (%v)", sz)
+				err = fmt.Errorf("right iter ended before left (%v, '%v')", sz, hex.EncodeToString(il.Key()))
 			}
 			return
 		}
