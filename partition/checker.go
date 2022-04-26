@@ -21,7 +21,7 @@ func compareIters(il, ir ethdb.Iterator) (sz int, err error) {
 	defer ir.Release()
 	for il.Next() {
 		if !ir.Next() {
-			err = fmt.Errorf("right iter ended before left")
+			err = fmt.Errorf("right iter ended before left (%v)", sz)
 			return
 		}
 		if bytes.Compare(il.Key(), ir.Key()) != 0 {
