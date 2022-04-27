@@ -11,7 +11,7 @@ import (
 )
 
 func makeRandomKey() []byte {
-	key := make([]byte, rand.Intn(20))
+	key := make([]byte, 2+rand.Intn(18))
 	rand.Read(key)
 	return key
 }
