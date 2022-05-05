@@ -21,7 +21,7 @@ func main() {
 			if len(argsOnly) > 2 {
 				targetPath = argsOnly[2]
 			}
-			if err = partition.POCPartitionDatabase(argsOnly[1], targetPath, 2,
+			if err = partition.POCPartitionDatabase2(argsOnly[1], targetPath, 2,
 				func(r string) {
 					println(r)
 				}); err != nil {
