@@ -15,7 +15,7 @@ func POCPartitionDatabase(dbPath, targetPath string, numParts int, report func(s
 		return fmt.Errorf("should not happen - POC version only supports two partitions")
 	}
 
-	if sourceDb, err := rawdb.NewLevelDBDatabaseWithFreezer(dbPath, 0, 0, filepath.Join(dbPath, "ancient"), ""); err != nil {
+	if sourceDb, err := rawdb.NewLevelDBDatabaseWithFreezer(dbPath, 1024, 1024, filepath.Join(dbPath, "ancient"), ""); err != nil {
 		panic(err)
 	} else {
 
@@ -26,12 +26,12 @@ func POCPartitionDatabase(dbPath, targetPath string, numParts int, report func(s
 
 		var part0Db, part1Db ethdb.Database
 
-		if part0Db, err = rawdb.NewLevelDBDatabase(db0Path, 0, 0, ""); err != nil {
+		if part0Db, err = rawdb.NewLevelDBDatabase(db0Path, 1024, 1024, ""); err != nil {
 			panic(err)
 		}
 		defer part0Db.Close()
 
-		if part1Db, err = rawdb.NewLevelDBDatabase(db1Path, 0, 0, ""); err != nil {
+		if part1Db, err = rawdb.NewLevelDBDatabase(db1Path, 1024, 1024, ""); err != nil {
 			panic(err)
 		}
 		defer part1Db.Close()
