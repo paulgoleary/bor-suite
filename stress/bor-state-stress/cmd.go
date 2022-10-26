@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"github.com/maticnetwork/bor/core/rawdb"
+	"github.com/maticnetwork/bor/ethdb"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -22,21 +23,26 @@ func main() {
 	}
 
 	dbPath := argsOnly[0]
-	if sourceDb, err := rawdb.NewLevelDBDatabaseWithFreezer(dbPath, cacheMb, 1024, filepath.Join(dbPath, "ancient"), ""); err == nil {
+
+	var sourceDb ethdb.Database
+	var err error
+	cntFound := 0
+	if sourceDb, err = rawdb.NewLevelDBDatabaseWithFreezer(dbPath, cacheMb, 1024, filepath.Join(dbPath, "ancient"), ""); err == nil {
 		defer sourceDb.Close()
 		startTotal := time.Now()
 		for x := 0; x < 10; x++ {
 			startBatch := time.Now()
 			for i := 0; i < 100_000; i++ {
-				var randKey [20]byte
+				var randKey [32]byte
 				rand.Read(randKey[:])
-				iter := sourceDb.NewIterator(nil, randKey[:])
-				iter.Next()
+				if bytes, _ := sourceDb.Get(randKey[:]); bytes != nil {
+					cntFound++
+				}
 			}
 			durationBatch := time.Since(startBatch)
-			println(fmt.Sprintf("BATCH %v execution time: %v", x, durationBatch))
+			fmt.Printf("BATCH %v execution time: %v\n", x, durationBatch)
 		}
 		durationTotal := time.Since(startTotal)
-		println(fmt.Sprintf("TOTAL execution time: %v", durationTotal))
+		fmt.Printf("TOTAL execution time: %v\n", durationTotal)
 	}
 }
