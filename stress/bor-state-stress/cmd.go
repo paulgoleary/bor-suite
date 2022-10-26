@@ -44,5 +44,7 @@ func main() {
 		}
 		durationTotal := time.Since(startTotal)
 		fmt.Printf("TOTAL execution time: %v\n", durationTotal)
+	} else {
+		fmt.Printf("ERROR: %v\n", err)
 	}
 }
