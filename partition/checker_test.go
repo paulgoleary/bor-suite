@@ -1,7 +1,7 @@
 package partition
 
 import (
-	"github.com/maticnetwork/bor/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"

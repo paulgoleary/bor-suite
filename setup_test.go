@@ -2,9 +2,9 @@ package bor_suite
 
 import (
 	"encoding/json"
-	"github.com/maticnetwork/bor/core"
-	"github.com/maticnetwork/bor/core/rawdb"
-	"github.com/maticnetwork/bor/eth"
+	"github.com/ethereum/go-ethereum/core"
+	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/ethereum/go-ethereum/eth"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"testing"

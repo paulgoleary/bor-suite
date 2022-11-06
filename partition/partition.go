@@ -2,9 +2,9 @@ package partition
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/gammazero/workerpool"
-	"github.com/maticnetwork/bor/core/rawdb"
-	"github.com/maticnetwork/bor/ethdb"
 	"path/filepath"
 	"runtime"
 )

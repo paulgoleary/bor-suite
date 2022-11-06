@@ -2,9 +2,9 @@ package partition
 
 import (
 	"fmt"
-	"github.com/maticnetwork/bor/core/rawdb"
-	"github.com/maticnetwork/bor/ethdb"
-	"github.com/maticnetwork/bor/ethdb/leveldb"
+	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb/leveldb"
 	"io/fs"
 	"path/filepath"
 	"strconv"

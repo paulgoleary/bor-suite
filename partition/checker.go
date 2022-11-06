@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"github.com/maticnetwork/bor/core/rawdb"
-	"github.com/maticnetwork/bor/ethdb"
+	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 	"math/rand"
 	"path/filepath"
 )
@@ -46,7 +46,7 @@ func compareIters(il, ir ethdb.Iterator) (sz int, err error) {
 
 func CheckPOCPartitionedDatabase(srcDbPath, freezerPath string, checkDbPartPaths []string, checks int, report func(string)) error {
 
-	if sourceDb, err := rawdb.NewLevelDBDatabaseWithFreezer(srcDbPath, 0, 0, filepath.Join(srcDbPath, "ancient"), ""); err != nil {
+	if sourceDb, err := rawdb.NewLevelDBDatabaseWithFreezer(srcDbPath, 0, 0, filepath.Join(srcDbPath, "ancient"), "", true); err != nil {
 		return err
 	} else {
 		if checkDb, err := NewPOCPartitionedDatabaseWithFreezer(checkDbPartPaths, 0, 0, freezerPath, ""); err != nil {

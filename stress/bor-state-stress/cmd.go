@@ -3,8 +3,8 @@ package main
 import (
 	"crypto/rand"
 	"fmt"
-	"github.com/maticnetwork/bor/core/rawdb"
-	"github.com/maticnetwork/bor/ethdb"
+	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -27,7 +27,7 @@ func main() {
 	var sourceDb ethdb.Database
 	var err error
 	cntFound := 0
-	if sourceDb, err = rawdb.NewLevelDBDatabaseWithFreezer(dbPath, cacheMb, 1024, filepath.Join(dbPath, "ancient"), ""); err == nil {
+	if sourceDb, err = rawdb.NewLevelDBDatabaseWithFreezer(dbPath, cacheMb, 1024, filepath.Join(dbPath, "ancient"), "", true); err == nil {
 		defer sourceDb.Close()
 		startTotal := time.Now()
 		for x := 0; x < 10; x++ {
