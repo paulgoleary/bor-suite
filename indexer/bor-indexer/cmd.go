@@ -30,15 +30,18 @@ func main() {
 		startTotal := time.Now()
 
 		blockNum := uint64(0)
+		cntReceipts := 0
 		for {
 			blockHash := rawdb.ReadCanonicalHash(sourceDb, blockNum)
 			if theBlock := rawdb.ReadBlock(sourceDb, blockHash, blockNum); theBlock == nil {
 				break
 			} else {
-				rawdb.ReadRawReceipts(sourceDb, blockHash, blockNum) // clock reading receipts as well...
+				if rawdb.ReadRawReceipts(sourceDb, blockHash, blockNum) != nil {
+					cntReceipts++
+				}
 				blockNum++
-				if blockNum%10_000 == 0 {
-					fmt.Printf("AT BLOCK %v\n", blockNum)
+				if blockNum%100_000 == 0 {
+					fmt.Printf("AT BLOCK %v, receipt count %v\n", blockNum, cntReceipts)
 				}
 			}
 		}
