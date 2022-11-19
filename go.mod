@@ -5,6 +5,7 @@ require (
 	github.com/gammazero/workerpool v1.1.2
 	github.com/stretchr/testify v1.7.2
 	github.com/umbracle/ethgo v0.1.2-0.20220425081604-548d341136fb
+	github.com/urfave/cli/v2 v2.10.2
 )
 
 require (
@@ -63,7 +64,6 @@ require (
 	github.com/tklauser/numcpus v0.2.2 // indirect
 	github.com/tyler-smith/go-bip39 v1.1.0 // indirect
 	github.com/umbracle/fastrlp v0.0.0-20211229195328-c1416904ae17 // indirect
-	github.com/urfave/cli/v2 v2.10.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.4.0 // indirect
 	github.com/valyala/fastjson v1.6.3 // indirect

@@ -25,6 +25,16 @@ type PartitionedDatabase struct {
 	pt partTable
 }
 
+func (p PartitionedDatabase) NewBatchWithSize(size int) ethdb.Batch {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (p PartitionedDatabase) NewSnapshot() (ethdb.Snapshot, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 var _ ethdb.KeyValueStore = &PartitionedDatabase{}
 
 func getPartNameOrd(name string) (ord int, err error) {
@@ -84,13 +94,13 @@ func NewPOCPartitionedDatabaseWithFreezer(partDirs []string, cache int, handles 
 			err = fmt.Errorf("should not happen - invalid partition ordinal: %v", n)
 			return
 		}
-		if pt[ord], err = leveldb.New(d, cache, handles, namespace); err != nil {
+		if pt[ord], err = leveldb.New(d, cache, handles, namespace, false); err != nil {
 			return
 		}
 	}
 
 	pdb := &PartitionedDatabase{pt: partTable(pt)}
-	return rawdb.NewDatabaseWithFreezer(pdb, freezerPath, namespace)
+	return rawdb.NewDatabaseWithFreezer(pdb, freezerPath, namespace, false)
 }
 
 func (p PartitionedDatabase) Has(key []byte) (bool, error) {

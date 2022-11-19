@@ -32,7 +32,7 @@ func NewCalcBaseFee(config *params.ChainConfig, parent *types.Header) *big.Int {
 		denom = new(big.Int)
 	)
 
-	testFactor := uint64(2)
+	testFactor := uint64(6)
 	if parent.GasUsed > parentGasTarget {
 		// If the parent block used more gas than its target, the baseFee should increase.
 		// max(1, parentBaseFee * gasUsedDelta / parentGasTarget / baseFeeChangeDenominator)
@@ -85,7 +85,7 @@ func TestBaseFeeCalc(t *testing.T) {
 	defer f.Close()
 
 	var newFeeCalc *big.Int
-	for i := int64(34621784); i < 34921784; i++ {
+	for i := int64(35357000); i < 35377063; i++ {
 		blk, err := ec.BlockByNumber(context.Background(), big.NewInt(i))
 		if err != nil {
 			continue
@@ -99,9 +99,12 @@ func TestBaseFeeCalc(t *testing.T) {
 		}
 		newFeeCalc = NewCalcBaseFee(BorMainnetChainConfig, h)
 
-		s := fmt.Sprintf("%v\t%.1f\t%.1f\n", i,
+		gasPercent := h.GasUsed * 100 / h.GasLimit
+
+		s := fmt.Sprintf("%v\t%.1f\t%.1f\t%v\n", i,
 			float64(checkFeeCalc.Int64())/1_000_000_000,
-			float64(newFeeCalc.Int64())/1_000_000_000)
+			float64(newFeeCalc.Int64())/1_000_000_000,
+			gasPercent)
 
 		f.Write([]byte(s))
 	}
