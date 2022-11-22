@@ -56,9 +56,10 @@ func main() {
 		}
 
 		for i := uint64(0); i < numWorkers; i++ {
-			wp.Submit(func() {
+			f := func() {
 				sliceFunc(i)
-			})
+			}
+			wp.Submit(f)
 		}
 
 		wp.StopWait()
