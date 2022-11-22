@@ -56,8 +56,9 @@ func main() {
 		}
 
 		for i := uint64(0); i < numWorkers; i++ {
+			x := i
 			f := func() {
-				sliceFunc(i)
+				sliceFunc(x)
 			}
 			wp.Submit(f)
 		}
