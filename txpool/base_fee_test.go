@@ -32,14 +32,13 @@ func NewCalcBaseFee(config *params.ChainConfig, parent *types.Header) *big.Int {
 		denom = new(big.Int)
 	)
 
-	testFactor := uint64(6)
 	if parent.GasUsed > parentGasTarget {
 		// If the parent block used more gas than its target, the baseFee should increase.
 		// max(1, parentBaseFee * gasUsedDelta / parentGasTarget / baseFeeChangeDenominator)
 		num.SetUint64(parent.GasUsed - parentGasTarget)
 		num.Mul(num, parent.BaseFee)
 		num.Div(num, denom.SetUint64(parentGasTarget))
-		num.Div(num, denom.SetUint64(params.BaseFeeChangeDenominator*testFactor))
+		num.Div(num, denom.SetUint64(params.BaseFeeChangeDenominatorPostDelhi))
 		baseFeeDelta := math.BigMax(num, common.Big1)
 
 		return num.Add(parent.BaseFee, baseFeeDelta)
@@ -49,7 +48,7 @@ func NewCalcBaseFee(config *params.ChainConfig, parent *types.Header) *big.Int {
 		num.SetUint64(parentGasTarget - parent.GasUsed)
 		num.Mul(num, parent.BaseFee)
 		num.Div(num, denom.SetUint64(parentGasTarget))
-		num.Div(num, denom.SetUint64(params.BaseFeeChangeDenominator*testFactor))
+		num.Div(num, denom.SetUint64(params.BaseFeeChangeDenominatorPostDelhi))
 		baseFee := num.Sub(parent.BaseFee, num)
 
 		return math.BigMax(baseFee, common.Big0)

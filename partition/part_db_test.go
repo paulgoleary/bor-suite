@@ -8,10 +8,6 @@ import (
 	"testing"
 )
 
-func noTestInitPartitionedDatabase(t *testing.T) {
-	NewPOCPartitionedDatabaseWithFreezer("/Users/pauloleary/work/test-partition", 0, 0, "freezer", "")
-}
-
 func TestPartitionDir(t *testing.T) {
 
 	dir, err := ioutil.TempDir("", "test-partition-*")
