@@ -37,18 +37,19 @@ func main() {
 		sliceFunc := func(blockMod uint64) {
 			cntReceipts := 0
 			cntProc := 0
+			blockNum := blockMod
 			for {
-				blockHash := rawdb.ReadCanonicalHash(sourceDb, blockMod)
-				if theBlock := rawdb.ReadBlock(sourceDb, blockHash, blockMod); theBlock == nil {
+				blockHash := rawdb.ReadCanonicalHash(sourceDb, blockNum)
+				if theBlock := rawdb.ReadBlock(sourceDb, blockHash, blockNum); theBlock == nil {
 					break
 				} else {
-					if rawdb.ReadRawReceipts(sourceDb, blockHash, blockMod) != nil {
+					if rawdb.ReadRawReceipts(sourceDb, blockHash, blockNum) != nil {
 						cntReceipts++
 					}
-					blockMod += numWorkers
+					blockNum += numWorkers
 					cntProc++
 					if cntProc%100_000 == 0 {
-						fmt.Printf("WORKER %v: AT BLOCK %v, receipt count %v\n", blockMod, cntProc, cntReceipts)
+						fmt.Printf("WORKER %v: AT BLOCK %v, count processed, receipt %v, %v\n", blockMod, blockNum, cntProc, cntReceipts)
 					}
 				}
 			}
