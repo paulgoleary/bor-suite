@@ -3,13 +3,26 @@ package main
 import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/gammazero/workerpool"
+	"github.com/paulgoleary/bor-suite/indexer"
 	"os"
 	"path/filepath"
 	"strconv"
 	"time"
 )
+
+type testSink struct {
+	sink *indexer.EventCounterSink
+}
+
+func (t *testSink) ProcessBorLogs(logs []*types.Log) error {
+	t.sink.Process(indexer.BorLogsToEthGo(logs))
+	return nil
+}
+
+var _ indexer.BorLogSink = &testSink{}
 
 func main() {
 	argsOnly := os.Args[1:]
@@ -23,6 +36,8 @@ func main() {
 	}
 
 	borDbPath := argsOnly[0]
+
+	sink := testSink{indexer.MakeEventCounterSink("Transfer")}
 
 	var sourceDb ethdb.Database
 	var err error
@@ -43,13 +58,17 @@ func main() {
 				if theBlock := rawdb.ReadBlock(sourceDb, blockHash, blockNum); theBlock == nil {
 					break
 				} else {
-					if rawdb.ReadRawReceipts(sourceDb, blockHash, blockNum) != nil {
+					if rcpts := rawdb.ReadRawReceipts(sourceDb, blockHash, blockNum); rcpts != nil {
+						for i := range rcpts {
+							sink.ProcessBorLogs(rcpts[i].Logs) // TODO: errors, etc.
+						}
 						cntReceipts++
 					}
 					blockNum += numWorkers
 					cntProc++
 					if cntProc%100_000 == 0 {
-						fmt.Printf("WORKER %v: AT BLOCK %v, count processed, receipt %v, %v\n", blockMod, blockNum, cntProc, cntReceipts)
+						fmt.Printf("WORKER %v: AT BLOCK %v, count processed, receipts %v, %v. FOUND %v\n", blockMod,
+							blockNum, cntProc, cntReceipts, sink.sink.Count.Load())
 					}
 				}
 			}
@@ -67,6 +86,7 @@ func main() {
 
 		durationTotal := time.Since(startTotal)
 		fmt.Printf("TOTAL execution time: %v\n", durationTotal)
+		fmt.Printf("FOUND EVENTS: %v\n", sink.sink.Count.Load())
 	} else {
 		fmt.Printf("ERROR: %v\n", err)
 	}

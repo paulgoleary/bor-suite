@@ -139,7 +139,11 @@ func TestBaseFeeCalc(t *testing.T) {
 		if newFeeCalc != nil {
 			h.BaseFee = newFeeCalc
 		}
-		newFeeCalc = NewCalcBaseFee(BorMainnetChainConfig, h)
+
+		BorMainnetChainConfig.Bor.DelhiBlock = big.NewInt(i)
+		newFeeCalc = misc.CalcBaseFee(BorMainnetChainConfig, h)
+		BorMainnetChainConfig.Bor.DelhiBlock = nil
+		// newFeeCalc = NewCalcBaseFee(BorMainnetChainConfig, h)
 
 		gasPercent := h.GasUsed * 100 / h.GasLimit
 
