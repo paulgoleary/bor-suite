@@ -134,7 +134,8 @@ func TestBaseFeeCalc(t *testing.T) {
 		}
 
 		h := blk.Header()
-		checkFeeCalc := misc.CalcBaseFee(BorMainnetChainConfig, h)
+		// checkFeeCalc := misc.CalcBaseFee(BorMainnetChainConfig, h)
+		checkFeeCalc := h.BaseFee
 
 		if newFeeCalc != nil {
 			h.BaseFee = newFeeCalc

@@ -55,21 +55,20 @@ func main() {
 			blockNum := blockMod
 			for {
 				blockHash := rawdb.ReadCanonicalHash(sourceDb, blockNum)
-				if theBlock := rawdb.ReadBlock(sourceDb, blockHash, blockNum); theBlock == nil {
-					break
-				} else {
-					if rcpts := rawdb.ReadRawReceipts(sourceDb, blockHash, blockNum); rcpts != nil {
-						for i := range rcpts {
-							sink.ProcessBorLogs(rcpts[i].Logs) // TODO: errors, etc.
-						}
-						cntReceipts++
+				//if theBlock := rawdb.ReadBlock(sourceDb, blockHash, blockNum); theBlock == nil {
+				//	// TODO???
+				//}
+				if rcpts := rawdb.ReadRawReceipts(sourceDb, blockHash, blockNum); rcpts != nil {
+					for i := range rcpts {
+						sink.ProcessBorLogs(rcpts[i].Logs) // TODO: errors, etc.
 					}
-					blockNum += numWorkers
-					cntProc++
-					if cntProc%100_000 == 0 {
-						fmt.Printf("WORKER %v: AT BLOCK %v, count processed, receipts %v, %v. FOUND %v\n", blockMod,
-							blockNum, cntProc, cntReceipts, sink.sink.Count.Load())
-					}
+					cntReceipts++
+				}
+				blockNum += numWorkers
+				cntProc++
+				if cntProc%100_000 == 0 {
+					fmt.Printf("WORKER %v: AT BLOCK %v, count processed, receipts %v, %v. FOUND %v\n", blockMod,
+						blockNum, cntProc, cntReceipts, sink.sink.Count.Load())
 				}
 			}
 		}
