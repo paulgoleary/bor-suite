@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethdb"
@@ -49,14 +50,18 @@ func main() {
 
 		startTotal := time.Now()
 
+		var nullHash common.Hash
+
 		sliceFunc := func(blockMod uint64) {
 			cntReceipts := 0
 			cntProc := 0
 			blockNum := blockMod
 			for {
-				blockHash := rawdb.ReadCanonicalHash(sourceDb, blockNum)
+				var blockHash common.Hash
+				if blockHash = rawdb.ReadCanonicalHash(sourceDb, blockNum); blockHash == nullHash {
+					break
+				}
 				//if theBlock := rawdb.ReadBlock(sourceDb, blockHash, blockNum); theBlock == nil {
-				//	// TODO???
 				//}
 				if rcpts := rawdb.ReadRawReceipts(sourceDb, blockHash, blockNum); rcpts != nil {
 					for i := range rcpts {
