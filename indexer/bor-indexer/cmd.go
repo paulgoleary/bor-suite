@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/rawdb"
@@ -10,7 +11,6 @@ import (
 	"github.com/paulgoleary/bor-suite/indexer"
 	"os"
 	"path/filepath"
-	"strconv"
 	"time"
 )
 
@@ -26,22 +26,20 @@ func (t *testSink) ProcessBorLogs(logs []*types.Log) error {
 var _ indexer.BorLogSink = &testSink{}
 
 func main() {
-	argsOnly := os.Args[1:]
-	cacheMb := 512
-	if len(argsOnly) > 1 {
-		if mb, err := strconv.Atoi(argsOnly[1]); err != nil {
-			panic(err)
-		} else {
-			cacheMb = mb
-		}
-	}
 
-	borDbPath := argsOnly[0]
+	var cacheMb int
+	var borDbPath string
+	var err error
+
+	if borDbPath, cacheMb, err = processArgs(); err != nil {
+		flag.Usage()
+		fmt.Printf("ERROR: %v\n", err)
+		os.Exit(1)
+	}
 
 	sink := testSink{indexer.MakeEventCounterSink("Transfer")}
 
 	var sourceDb ethdb.Database
-	var err error
 	if sourceDb, err = rawdb.NewLevelDBDatabaseWithFreezer(borDbPath, cacheMb, 1024, filepath.Join(borDbPath, "ancient"), "", true); err == nil {
 		defer sourceDb.Close()
 
@@ -94,4 +92,14 @@ func main() {
 	} else {
 		fmt.Printf("ERROR: %v\n", err)
 	}
+}
+
+func processArgs() (dbPath string, cacheMb int, err error) {
+	flag.IntVar(&cacheMb, "cache", 512, "cache size in MB")
+	flag.StringVar(&dbPath, "path", "", "path to database")
+	flag.Parse()
+	if _, err = os.Stat(dbPath); err != nil {
+		return
+	}
+	return
 }
