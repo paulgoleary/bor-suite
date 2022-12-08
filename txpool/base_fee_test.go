@@ -58,6 +58,8 @@ func NewCalcBaseFee(config *params.ChainConfig, parent *types.Header) *big.Int {
 
 func TestBaseFeeCalc(t *testing.T) {
 
+	t.SkipNow() // depends on local static files, skip for now
+
 	BorMainnetChainConfig := &params.ChainConfig{
 		ChainID:             big.NewInt(137),
 		HomesteadBlock:      big.NewInt(0),
