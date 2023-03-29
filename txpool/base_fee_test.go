@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/consensus/misc"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/params"
@@ -39,7 +38,7 @@ func NewCalcBaseFee(config *params.ChainConfig, parent *types.Header) *big.Int {
 		num.SetUint64(parent.GasUsed - parentGasTarget)
 		num.Mul(num, parent.BaseFee)
 		num.Div(num, denom.SetUint64(parentGasTarget))
-		num.Div(num, denom.SetUint64(params.BaseFeeChangeDenominatorPostDelhi))
+		num.Div(num, denom.SetUint64(params.BaseFeeChangeDenominatorPostDelhi*2))
 		baseFeeDelta := math.BigMax(num, common.Big1)
 
 		return num.Add(parent.BaseFee, baseFeeDelta)
@@ -49,7 +48,7 @@ func NewCalcBaseFee(config *params.ChainConfig, parent *types.Header) *big.Int {
 		num.SetUint64(parentGasTarget - parent.GasUsed)
 		num.Mul(num, parent.BaseFee)
 		num.Div(num, denom.SetUint64(parentGasTarget))
-		num.Div(num, denom.SetUint64(params.BaseFeeChangeDenominatorPostDelhi))
+		num.Div(num, denom.SetUint64(params.BaseFeeChangeDenominatorPostDelhi*2))
 		baseFee := num.Sub(parent.BaseFee, num)
 
 		return math.BigMax(baseFee, common.Big0)
@@ -125,9 +124,9 @@ func TestBaseFeeCalc(t *testing.T) {
 	require.NoError(t, err)
 	defer f.Close()
 
-	startBlock := int64(35893346)
+	startBlock := int64(40593500) // 40594000
 	var newFeeCalc *big.Int
-	for i := startBlock; i < startBlock+int64(24*60*30); i++ {
+	for i := startBlock; i < startBlock+1000; i++ {
 		blk, err := ec.BlockByNumber(context.Background(), big.NewInt(i))
 		if err != nil {
 			continue
@@ -141,10 +140,10 @@ func TestBaseFeeCalc(t *testing.T) {
 			h.BaseFee = newFeeCalc
 		}
 
-		BorMainnetChainConfig.Bor.DelhiBlock = big.NewInt(i)
-		newFeeCalc = misc.CalcBaseFee(BorMainnetChainConfig, h)
-		BorMainnetChainConfig.Bor.DelhiBlock = nil
-		// newFeeCalc = NewCalcBaseFee(BorMainnetChainConfig, h)
+		//BorMainnetChainConfig.Bor.DelhiBlock = big.NewInt(i)
+		//newFeeCalc = misc.CalcBaseFee(BorMainnetChainConfig, h)
+		//BorMainnetChainConfig.Bor.DelhiBlock = nil
+		newFeeCalc = NewCalcBaseFee(BorMainnetChainConfig, h)
 
 		gasPercent := h.GasUsed * 100 / h.GasLimit
 
