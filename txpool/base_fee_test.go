@@ -133,6 +133,7 @@ func TestBaseFeeCalc(t *testing.T) {
 		}
 
 		h := blk.Header()
+		// TODO: remove?
 		// checkFeeCalc := misc.CalcBaseFee(BorMainnetChainConfig, h)
 		checkFeeCalc := h.BaseFee
 
